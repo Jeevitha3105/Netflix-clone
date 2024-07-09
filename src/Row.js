@@ -28,18 +28,54 @@ function Row({ title, fetchUrl, isLargeRow }) {
     },
   };
 
+  // const handleClick = (movie) => {
+  //   if (trailerUrl) {
+  //     setTrailerUrl("");
+  //   } else {
+  //     movieTrailer(movie?.name || movie?.title || movie?.original_name || "")
+  //       .then((url) => {
+  //         if(url){
+  //           console.log(url);
+  //         }
+  //         const urlParams = new URLSearchParams(new URL(url).search);
+  //         setTrailerUrl(urlParams.get('v'));
+  //       })
+  //       .catch((error) => console.log(error));
+  //   }
+  // };
+
   const handleClick = (movie) => {
     if (trailerUrl) {
       setTrailerUrl("");
     } else {
-      movieTrailer(movie?.name || "")
+      let searchTerm = movie?.name || movie?.title || movie?.original_name || "";
+      movieTrailer(searchTerm)
         .then((url) => {
-          const urlParams = new URLSearchParams(new URL(url).search);
-          setTrailerUrl(urlParams.get('v'));
+          if (url) {
+            // Log the URL to verify its format
+            console.log("Found trailer URL:", url);
+  
+            // Extract video ID from URL
+            const urlParams = new URLSearchParams(new URL(url).search);
+            const videoId = urlParams.get('v');
+  
+            if (videoId) {
+              setTrailerUrl(videoId);
+            } else {
+              console.error("Failed to extract video ID from trailer URL:", url);
+            }
+          } else {
+            console.error("No trailer found for:", searchTerm);
+            // Optionally provide feedback to the user
+          }
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.error("Error fetching trailer:", error);
+          // Handle error gracefully, e.g., show a message to the user
+        });
     }
   };
+  
 
   return (
     <div className='row'>
